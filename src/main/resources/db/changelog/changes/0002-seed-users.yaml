@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-seed-admin-user
+      author: assistant
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - tableIsEmpty:
+            tableName: users
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: admin123
+              - column:
+                  name: role
+                  value: ADMIN
+              - column:
+                  name: created_at
+                  value: "2025-01-01T00:00:00Z"
+              - column:
+                  name: updated_at
+                  value: "2025-01-01T00:00:00Z"
+
