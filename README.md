@@ -92,7 +92,7 @@ Application disponible sur → `http://localhost:8080`
 
 
 ## Diagramme de Classes UML
-![Diagramme UML](docs/smartshop.drawio.png)
+![Diagramme UML](docs/smartshop.drawio)
 
 ## Captures Swagger (quelques exemples)
 
