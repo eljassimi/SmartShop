@@ -1,0 +1,471 @@
+{
+  "info": {
+    "_postman_id": "1ce0aeed-2c30-4705-8975-792da0ef92b2",
+    "name": "SmartShop API",
+    "schema": "https://schema.postman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection complète couvrant les flux ADMIN et CLIENT pour SmartShop (sessions HTTP). Les requêtes utilisent les cookies Postman pour conserver la session."
+  },
+  "item": [
+    {
+      "name": "00 - Auth",
+      "description": "Connexion/déconnexion pour les deux rôles",
+      "item": [
+        {
+          "name": "ADMIN - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login admin ok\", () => pm.response.code === 200);",
+                  "const user = pm.response.json().user;",
+                  "pm.environment.set(\"admin_user_id\", user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CLIENT - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{client_username}}\",\n  \"password\": \"{{client_password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login client ok\", () => pm.response.code === 200);",
+                  "const user = pm.response.json().user;",
+                  "pm.environment.set(\"client_user_id\", user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Auth - Current User",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/me"
+          },
+          "response": []
+        },
+        {
+          "name": "Auth - Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/logout"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10 - Admin / Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"client1\",\n  \"password\": \"client123\",\n  \"role\": \"CLIENT\"\n}"
+            },
+            "url": "{{baseUrl}}/api/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.environment.set(\"client_user_created_id\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/users"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"client1\",\n  \"password\": \"client123\",\n  \"role\": \"CLIENT\"\n}"
+            },
+            "url": "{{baseUrl}}/api/users/{{client_user_created_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/users/{{client_user_created_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "20 - Admin / Clients",
+      "item": [
+        {
+          "name": "Create Client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Micro Client\",\n  \"contactName\": \"Alice\",\n  \"email\": \"microclient@example.com\",\n  \"phone\": \"+212600000001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/clients"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.environment.set(\"client_id\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "List Clients",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/clients"
+          },
+          "response": []
+        },
+        {
+          "name": "Client Details",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/clients/{{client_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Client",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Micro Client SARL\",\n  \"contactName\": \"Alice\",\n  \"email\": \"microclient@example.com\",\n  \"phone\": \"+212600000001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/clients/{{client_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Client",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/clients/{{client_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "30 - Admin / Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"LAP-001\",\n  \"name\": \"Laptop Pro\",\n  \"description\": \"15'' i7 32Go\",\n  \"unitPrice\": 15000,\n  \"stockQuantity\": 25\n}"
+            },
+            "url": "{{baseUrl}}/api/products"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.environment.set(\"product_id\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"LAP-001\",\n  \"name\": \"Laptop Pro\",\n  \"description\": \"Mise à jour\",\n  \"unitPrice\": 15200,\n  \"stockQuantity\": 30\n}"
+            },
+            "url": "{{baseUrl}}/api/products/{{product_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/products/{{product_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "40 - Admin / Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": {{client_id}},\n  \"promoCode\": \"PROMO-TEST\",\n  \"notes\": \"Commande test\",\n  \"items\": [\n    {\n      \"productId\": {{product_id}},\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/api/orders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.environment.set(\"order_id\", json.id);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders"
+          },
+          "response": []
+        },
+        {
+          "name": "Order Details",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders/{{order_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Order",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/orders/{{order_id}}/confirm"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/orders/{{order_id}}/cancel"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "Raison de rejet"
+            },
+            "url": "{{baseUrl}}/api/orders/{{order_id}}/reject"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "50 - Admin / Payments",
+      "item": [
+        {
+          "name": "Add Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": {{order_id}},\n  \"amount\": 5000,\n  \"paymentMethod\": \"ESPECES\",\n  \"status\": \"ENCAISSE\",\n  \"paymentDate\": \"2025-11-25\",\n  \"reference\": \"REC-0001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments"
+          },
+          "response": []
+        },
+        {
+          "name": "Payments for Order",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/payments/order/{{order_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "60 - Client Access",
+      "item": [
+        {
+          "name": "Client Profile (me)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/clients/me"
+          },
+          "response": []
+        },
+        {
+          "name": "Client Orders (me)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders/me"
+          },
+          "response": []
+        },
+        {
+          "name": "Products - Read only",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "admin_username",
+      "value": "admin"
+    },
+    {
+      "key": "admin_password",
+      "value": "admin123"
+    },
+    {
+      "key": "client_username",
+      "value": "client1"
+    },
+    {
+      "key": "client_password",
+      "value": "client123"
+    }
+  ]
+}
+
